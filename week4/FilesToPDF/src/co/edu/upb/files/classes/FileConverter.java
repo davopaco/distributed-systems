@@ -2,7 +2,9 @@ package co.edu.upb.files.classes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -17,30 +19,27 @@ public class FileConverter {
     public FileConverter(FileRepository fileRepository, int threadCount) {
         this.fileRepository = fileRepository;
         this.threadCount = threadCount;
-
-        this.outputPaths = new ArrayList<>();
+        this.outputPaths = Collections.synchronizedList(new ArrayList<>());
+        // Ajusta las rutas según tu entorno
         this.outputPath = "E:/UPB/8VO_SEMESTRE/DISTRIBUIDOS/PROJECTS/distributed-systems/week4/FilesToPDF/output/";
         this.inputPath = "E:/UPB/8VO_SEMESTRE/DISTRIBUIDOS/PROJECTS/distributed-systems/week4/FilesToPDF/assets/";
     }
 
     public void convertFromFileToPDF() {
-        ExecutorService executor = Executors.newFixedThreadPool(this.threadCount); // Executes using a certain number of
-                                                                                   // threads
+        ExecutorService executor = Executors.newFixedThreadPool(this.threadCount);
 
-        // Execute the files to PDF conversion using the executor
-        executor.submit(() -> {
-            this.fileRepository.getURLs().forEach((file) -> {
+        for (File file : this.fileRepository.getURLs()) {
+            executor.submit(() -> {
                 try {
                     List<String> commands = getOfficeCommand(file);
                     boolean result = executeProcessBuild(commands);
                     if (!result)
-                        throw new RuntimeException("Error converting file to PDF");
-
+                        throw new RuntimeException("Error converting file: " + file.name());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
-        });
+        }
 
         executor.shutdown();
         try {
@@ -54,40 +53,45 @@ public class FileConverter {
             e.printStackTrace();
         }
 
-        //Print the list of PDF files with its corresponding outputs
-        for (int i = 0; i<this.outputPaths.size(); i++){
-            String[] directories = this.outputPaths.get(i).split("/");
-            String file = directories[directories.length-1];
-
-            System.out.println("File: " + file + " - Corresponding path: " + this.outputPaths.get(i));
+        // Imprime la lista de archivos PDF con su ruta correspondiente
+        for (String path : this.outputPaths) {
+            String[] directories = path.split("/");
+            String fileName = directories[directories.length - 1];
+            System.out.println("File: " + fileName + " - Corresponding path: " + path);
         }
     }
 
-    // Gets the respective command for the office program
+    // Construye la lista de comandos para convertir un archivo usando soffice
     private List<String> getOfficeCommand(File file) {
-
         String fullOutputPath = this.outputPath + file.name() + ".pdf";
         this.outputPaths.add(fullOutputPath);
 
+        // Construye el directorio temporal en formato URL
+        String tmpDir = System.getProperty("java.io.tmpdir").replace("\\", "/");
+        if (!tmpDir.startsWith("file:///")) {
+            tmpDir = "file:///" + tmpDir;
+        }
+        String uniqueUserInstallation = tmpDir + "LOProfile_" + UUID.randomUUID().toString();
+
         List<String> commands = new ArrayList<>();
         commands.add("soffice");
+        // Agrega el parámetro con el perfil de usuario único
+        commands.add("-env:UserInstallation=" + uniqueUserInstallation);
         commands.add("--convert-to");
         commands.add("pdf");
         commands.add("--outdir");
-        commands.add(String.format("\"%s\"", outputPath));
-        commands.add(String.format("\"%s%s\"", inputPath, file.filePath()));
+        commands.add(outputPath);
+        commands.add(inputPath + file.filePath());
         commands.add("--headless");
         return commands;
     }
 
-    // Execute the command using ProcessBuilder
+    // Ejecuta el comando mediante ProcessBuilder
     private boolean executeProcessBuild(List<String> commands) {
-
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
         try {
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
-
             return exitCode == 0;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
