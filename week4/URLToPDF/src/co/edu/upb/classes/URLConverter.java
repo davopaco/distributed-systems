@@ -26,19 +26,19 @@ public class URLConverter {
                                                                                    // threads
 
         // Execute the URL to PDF conversion using the executor
-        executor.submit(() -> {
-            this.urlRepository.getURLs().forEach((url) -> {
-                try {
-                    List<String> commands = getChromeCommand(url);
-                    boolean result = executeProcessBuild(commands);
-                    if (!result)
-                        throw new RuntimeException("Error converting URL to PDF");
+        for (URL url: this.urlRepository.getURLs()) {
+            executor.submit(() -> {
+                    try {
+                        List<String> commands = getChromeCommand(url);
+                        boolean result = executeProcessBuild(commands);
+                        if (!result)
+                            throw new RuntimeException("Error converting URL to PDF");
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
             });
-        });
+        }
 
         executor.shutdown();
         try {
