@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa0f475e-d2be-468f-bf11-3356cdca5ee6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/co/edu/upb/songclient/classes/InterfaceSong.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/co/edu/upb/songclient/classes/SOAPClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/co/edu/upb/songclient/classes/Song.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/co/edu/upb/songclient/main/SongClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SongServer/src/main/java/co/edu/upb/songserver/classes/InterfaceSong.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SongServer/src/main/java/co/edu/upb/songserver/classes/SOAPServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SongServer/src/main/java/co/edu/upb/songserver/classes/Song.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SongServer/src/main/java/co/edu/upb/songserver/classes/SongRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../SongServer/src/main/java/co/edu/upb/songserver/main/SongServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
